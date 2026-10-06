@@ -463,7 +463,7 @@ a { color: inherit; text-decoration: none; }
 /* ============ FAQ ============ */
 .faq {
   background: #000d33;
-  padding: 141px 98px 52px;
+  padding: 141px max(98px, calc((100% - 1240px) / 2)) 52px;
   display: flex; justify-content: space-between; align-items: flex-start; gap: 127px;
 }
 .faq-card {
