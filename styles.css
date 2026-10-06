@@ -381,7 +381,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .quem-paragrafos p.gap { margin-top: 30px; }
 .quem-paragrafos strong { font-weight: 700; }
 .quem-foto {
-  width: 571px; height: 420px; flex-shrink: 0;
+  width: 571px; height: auto; aspect-ratio: 3 / 2; flex-shrink: 0;
   margin-top: 36px;
   object-fit: cover;
   border-radius: 40px;
@@ -609,7 +609,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .stat, .stat:first-child { width: calc(50% - 10px); }
   .quem { flex-direction: column; padding: 100px 50px; }
   .quem-texto { width: 100%; max-width: 700px; }
-  .quem-foto { width: 100%; max-width: 700px; height: auto; aspect-ratio: 571 / 420; }
+  .quem-foto { width: 100%; max-width: 700px; height: auto; aspect-ratio: 3 / 2; }
   .dep-head { flex-direction: column; align-items: flex-start; }
   .faq { padding: 100px 50px 52px; gap: 60px; }
   .footer-top { grid-template-columns: 1fr 1fr 1fr; gap: 50px 40px; }
