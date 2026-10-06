@@ -109,3 +109,173 @@ medirFotos();
 animarGaleria();
 window.addEventListener('scroll', () => requestAnimationFrame(animarGaleria), { passive: true });
 window.addEventListener('resize', () => { medirFotos(); animarGaleria(); });
+
+// ============ FUNDO EM DEGRADÊ ============
+// Recriado a partir do degradê do Framer: cores medidas numa grade de 41 linhas (0% a 100% da altura
+// da página, a cada 2,5%) por 7 colunas (posições em FUNDO_X). Só verde e azul — o vermelho é sempre 0.
+// O desenho interpola de forma suave entre os pontos e põe um grão leve antes de arredondar as cores,
+// o que evita as "faixas" típicas de degradê escuro.
+const FUNDO_X = [0, .15, .3, .5, .7, .85, 1];
+const FUNDO_G = [
+  [2,2,2,2,2,3,6],
+  [2,2,2,2,3,6,10],
+  [2,2,2,3,6,11,14],
+  [2,2,2,6,11,16,20],
+  [2,2,5,9,15,19,24],
+  [2,4,7,12,19,23,26],
+  [4,6,9,14,20,24,26],
+  [4,7,11,16,21,25,27],
+  [5,8,11,17,21,25,27],
+  [5,8,12,17,22,25,27],
+  [5,8,11,18,22,25,27],
+  [6,9,12,18,23,25,27],
+  [7,10,13,19,24,26,27],
+  [7,11,14,20,24,26,27],
+  [8,11,16,20,25,26,27],
+  [10,13,18,22,25,27,27],
+  [11,15,20,24,26,27,27],
+  [12,18,21,25,26,27,27],
+  [17,20,23,25,27,27,27],
+  [18,21,24,26,26,27,27],
+  [20,22,25,26,26,26,26],
+  [20,23,24,25,26,25,25],
+  [19,21,23,24,24,24,23],
+  [18,19,20,21,21,21,20],
+  [13,16,17,19,19,19,19],
+  [10,12,12,13,13,13,13],
+  [6,7,9,10,11,11,11],
+  [4,5,6,6,8,8,10],
+  [4,4,5,6,6,7,8],
+  [3,4,4,5,6,6,7],
+  [3,4,4,5,6,6,8],
+  [4,4,5,6,6,8,11],
+  [4,5,6,6,9,10,12],
+  [5,5,7,8,11,12,13],
+  [6,7,8,11,12,13,15],
+  [6,8,10,12,14,17,19],
+  [9,10,12,13,18,19,21],
+  [10,12,13,17,20,21,23],
+  [11,13,16,19,21,23,24],
+  [13,15,18,21,23,25,25],
+  [13,17,20,22,24,25,27]
+];
+const FUNDO_B = [
+  [29,29,29,29,29,32,38],
+  [29,29,29,29,32,38,46],
+  [29,29,29,32,39,48,52],
+  [29,29,30,39,48,55,61],
+  [29,30,35,45,54,60,70],
+  [29,34,40,49,60,66,74],
+  [34,38,45,52,61,70,74],
+  [33,40,47,55,63,71,77],
+  [35,42,48,57,64,71,77],
+  [36,43,48,57,65,72,77],
+  [37,43,48,58,66,73,77],
+  [38,44,49,58,68,73,77],
+  [40,45,50,60,69,73,77],
+  [40,47,51,61,70,74,77],
+  [43,48,55,62,72,75,77],
+  [46,50,58,65,73,76,77],
+  [47,54,61,69,75,77,77],
+  [50,59,63,71,75,77,77],
+  [56,61,67,73,76,77,77],
+  [59,63,70,73,75,76,77],
+  [61,65,71,73,75,75,75],
+  [62,66,69,72,73,72,72],
+  [60,63,67,70,69,70,67],
+  [58,60,62,63,64,63,62],
+  [51,55,57,59,59,59,59],
+  [46,49,50,51,50,51,51],
+  [38,41,44,46,48,48,48],
+  [33,37,39,39,42,43,45],
+  [33,34,36,38,39,40,43],
+  [31,33,33,36,38,39,41],
+  [31,33,34,36,39,39,43],
+  [33,34,35,38,39,43,47],
+  [33,35,37,39,44,46,49],
+  [36,37,39,43,47,49,51],
+  [38,39,43,47,49,51,54],
+  [38,43,46,49,52,56,60],
+  [44,47,49,51,58,60,63],
+  [47,49,51,57,61,63,66],
+  [48,51,55,60,63,67,69],
+  [50,54,59,62,66,70,72],
+  [50,57,62,65,70,72,77]
+];
+
+// Catmull-Rom: curva suave que passa exatamente pelos pontos medidos
+const curva = (p0, p1, p2, p3, t) => p1 + .5 * t * (p2 - p0 + t * (2 * p0 - 5 * p1 + 4 * p2 - p3 + t * (3 * (p1 - p2) + p3 - p0)));
+function interpolar(vals, f) {
+  const n = vals.length;
+  const i = Math.min(n - 2, Math.max(0, Math.floor(f)));
+  const v = (k) => vals[Math.max(0, Math.min(n - 1, k))];
+  return curva(v(i - 1), v(i), v(i + 1), v(i + 2), f - i);
+}
+function indiceColuna(u) {
+  for (let i = 1; i < FUNDO_X.length; i++) {
+    if (u <= FUNDO_X[i]) return i - 1 + (u - FUNDO_X[i - 1]) / (FUNDO_X[i] - FUNDO_X[i - 1]);
+  }
+  return FUNDO_X.length - 1;
+}
+
+const fundo = document.querySelector('.fundo');
+const tela = fundo.querySelector('canvas');
+let tamanhoDesenhado = '';
+
+function desenharFundo() {
+  const w = fundo.offsetWidth;
+  const h = fundo.offsetHeight;
+  if (!w || !h) return;
+  // resolução interna limitada (~3,5 mi de pixels); o degradê é suave, então ampliar não perde nitidez
+  const esc = Math.min(1, Math.sqrt(3.5e6 / (w * h)));
+  const W = Math.round(w * esc);
+  const H = Math.round(h * esc);
+  if (tamanhoDesenhado === W + 'x' + H) return;
+  tamanhoDesenhado = W + 'x' + H;
+
+  const linhas = FUNDO_G.length;
+  // 1) cada linha da grade interpolada na horizontal para todas as colunas de pixel
+  const linG = new Float32Array(linhas * W);
+  const linB = new Float32Array(linhas * W);
+  const idx = new Float32Array(W);
+  for (let x = 0; x < W; x++) idx[x] = indiceColuna(W > 1 ? x / (W - 1) : 0);
+  for (let k = 0; k < linhas; k++) {
+    for (let x = 0; x < W; x++) {
+      linG[k * W + x] = interpolar(FUNDO_G[k], idx[x]);
+      linB[k * W + x] = interpolar(FUNDO_B[k], idx[x]);
+    }
+  }
+  // 2) na vertical, entre as linhas, com grão
+  tela.width = W;
+  tela.height = H;
+  const ctx = tela.getContext('2d');
+  const img = ctx.createImageData(W, H);
+  const px = img.data;
+  let semente = 1234567;
+  const aleatorio = () => { semente ^= semente << 13; semente ^= semente >>> 17; semente ^= semente << 5; return (semente >>> 0) / 4294967296; };
+  for (let y = 0; y < H; y++) {
+    const f = (H > 1 ? y / (H - 1) : 0) * (linhas - 1);
+    const i = Math.min(linhas - 2, Math.floor(f));
+    const t = f - i;
+    const a = Math.max(0, i - 1) * W, b = i * W, c = (i + 1) * W, d = Math.min(linhas - 1, i + 2) * W;
+    for (let x = 0; x < W; x++) {
+      const grao = (aleatorio() + aleatorio() + aleatorio() - 1.5) * 5; // desvio ~2,5 tons, como o original
+      const g = curva(linG[a + x], linG[b + x], linG[c + x], linG[d + x], t) + grao * .6;
+      const bl = curva(linB[a + x], linB[b + x], linB[c + x], linB[d + x], t) + grao;
+      const o = (y * W + x) * 4;
+      px[o] = 0;
+      px[o + 1] = g < 0 ? 0 : g > 255 ? 255 : g + .5;
+      px[o + 2] = bl < 0 ? 0 : bl > 255 ? 255 : bl + .5;
+      px[o + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+// desenha depois que a página já apareceu (até lá fica o degradê CSS de reserva)
+(window.requestIdleCallback || ((f) => setTimeout(f, 50)))(desenharFundo);
+let esperaFundo;
+new ResizeObserver(() => {
+  clearTimeout(esperaFundo);
+  esperaFundo = setTimeout(desenharFundo, 200);
+}).observe(fundo);
