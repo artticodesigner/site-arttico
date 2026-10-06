@@ -447,10 +447,17 @@ a { color: inherit; text-decoration: none; }
   margin-top: 35px;
   display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
 }
-.insta-posts iframe {
-  width: 326px; height: 600px;
-  border: 0; border-radius: 4px;
+/* Moldura que mostra só o cabeçalho + a mídia do post (corta curtidas e comentários) */
+.insta-post {
+  width: 326px; height: 462px;
+  overflow: hidden;
+  border-radius: 4px;
   background: #fff;
+}
+.insta-posts iframe {
+  display: block;
+  width: 326px; height: 700px;
+  border: 0;
 }
 
 /* ============ FAQ ============ */
@@ -590,7 +597,7 @@ a { color: inherit; text-decoration: none; }
 
   .insta { padding: 80px 16px; }
   .insta h2 { font-size: 30px; }
-  .insta-posts iframe { width: 100%; max-width: 360px; }
+  .insta-post { width: 326px; }
 
   .faq { padding: 70px 16px 40px; }
   .faq-card { padding: 40px 24px; }
