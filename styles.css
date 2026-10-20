@@ -103,11 +103,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   display: flex;
   flex-direction: column;
 }
-.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hero-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(0, 18, 45, .25) 0%, rgba(0, 14, 38, .4) 70%, rgba(0, 10, 28, .6) 100%);
-}
 .hero-content {
   position: relative;
   flex: 1;
@@ -122,7 +117,54 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   letter-spacing: -.5px;
   text-align: center;
 }
-.hero-title span { color: var(--ciano); }
+/* Brilho ciano bem suave atrás do título (o fundo é o degradê da página) */
+.hero::before {
+  content: "";
+  position: absolute; left: 50%; top: 38%;
+  width: min(1100px, 120vw); height: 620px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(56, 215, 255, .11), rgba(56, 215, 255, .04) 55%, transparent);
+  pointer-events: none;
+  animation: respira 7s ease-in-out infinite alternate;
+}
+@keyframes respira { from { opacity: .7; } to { opacity: 1; } }
+
+/* Título: cada palavra sobe saindo do desfoque, uma depois da outra */
+.hero-title .linha { display: block; }
+.hero-title .p {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(.42em);
+  filter: blur(12px);
+  animation: palavra .95s cubic-bezier(.2, .7, .2, 1) forwards;
+  animation-delay: calc(.15s + var(--i) * .1s);
+}
+@keyframes palavra { to { opacity: 1; transform: none; filter: blur(0); } }
+/* "marcas e resultados": ciano com um reflexo que atravessa as palavras */
+.hero-title .destaque .p {
+  color: transparent;
+  background: linear-gradient(100deg, var(--ciano) 0%, var(--ciano) 38%, #fff 50%, var(--ciano) 62%, var(--ciano) 100%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text;
+  animation:
+    palavra .95s cubic-bezier(.2, .7, .2, 1) forwards calc(.15s + var(--i) * .1s),
+    reflexo 6s ease-in-out infinite calc(1.3s + (var(--i) - 3) * .12s);
+}
+@keyframes reflexo {
+  0% { background-position: 100% 0; }
+  28%, 100% { background-position: 0 0; }
+}
+
+/* Demais elementos do hero entram em sequência depois do título */
+.entra { opacity: 0; transform: translateY(18px); animation: entra .8s cubic-bezier(.2, .7, .2, 1) forwards var(--d, 0s); }
+@keyframes entra { to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title .p, .entra { opacity: 1; transform: none; filter: none; animation: none; }
+  .hero-title .destaque .p { animation: none; background-position: 50% 0; }
+  .hero::before { animation: none; }
+}
 .hero-row { display: flex; align-items: center; gap: 53px; margin-top: 40px; }
 .btn-hero {
   flex-shrink: 0;
