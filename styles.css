@@ -67,6 +67,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   font: 500 16px "Rethink Sans", sans-serif;
   transition: transform .2s;
 }
+.btn-saiba { white-space: nowrap; }
 .btn-saiba:hover { transform: translateY(-2px); }
 .btn-menu {
   width: 46px; height: 46px;
@@ -817,3 +818,37 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 /* ============ AJUSTES FINOS ============ */
 .btn-menu:hover { background: rgba(255, 255, 255, .28); }
 @media (max-width: 900px) { .br-desk { display: none; } }
+
+/* ============ MENU EM LINHA (computador) ============ */
+/* o sanduíche fica só em telas menores; aqui os links aparecem direto na barra */
+@media (min-width: 1180px) {
+  .btn-menu { display: none; }
+  .nav-actions { order: 2; }
+  .nav-menu {
+    position: static;
+    order: 1;
+    flex-direction: row; align-items: center; gap: 2px;
+    min-width: 0; padding: 0;
+    margin: 0 auto;
+    background: none;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    opacity: 1; visibility: visible; transform: none;
+  }
+  .nav-menu a[href="#topo"] { display: none; } /* o logo já leva pro topo */
+  .nav-menu a {
+    position: relative;
+    padding: 10px 12px;
+    font: 500 14.5px Inter, sans-serif;
+    color: rgba(255, 255, 255, .82);
+    white-space: nowrap;
+  }
+  .nav-menu a:hover { background: none; color: #fff; }
+  .nav-menu a::after {
+    content: "";
+    position: absolute; left: 12px; right: 12px; bottom: 4px;
+    height: 1.5px; background: var(--ciano-forte);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .25s ease;
+  }
+  .nav-menu a:hover::after { transform: scaleX(1); }
+}
