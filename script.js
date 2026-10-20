@@ -73,6 +73,24 @@ const obs = new IntersectionObserver((entradas) => {
 }, { threshold: 0.2 });
 document.querySelectorAll('.reveal, .contador').forEach((el) => obs.observe(el));
 
+// ============ CARROSSEL DO QUEM SOMOS ============
+// troca de foto a cada 4,5 s; só roda enquanto a seção está visível
+const carrossel = document.querySelector('.quem-carrossel');
+if (carrossel) {
+  const fotosEquipe = [...carrossel.querySelectorAll('img')];
+  let atual = 0;
+  let timer = null;
+  const proxima = () => {
+    fotosEquipe[atual].classList.remove('ativa');
+    atual = (atual + 1) % fotosEquipe.length;
+    fotosEquipe[atual].classList.add('ativa');
+  };
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting && !timer) timer = setInterval(proxima, 4500);
+    if (!e.isIntersecting && timer) { clearInterval(timer); timer = null; }
+  }, { threshold: 0.2 }).observe(carrossel);
+}
+
 // ============ GALERIA: fotos se abrem com o scroll ============
 const galeria = document.querySelector('.galeria');
 const texto = document.querySelector('.galeria-texto');
