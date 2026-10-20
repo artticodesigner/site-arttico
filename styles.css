@@ -589,7 +589,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 
 /* ============ NOSSA EQUIPE ============ */
 .time {
-  padding: 120px 0 120px max(50px, calc((100% - 1240px) / 2));
+  background: #000d33; /* mesmo fundo da FAQ, que vem logo abaixo */
+  padding: 120px 0 40px max(50px, calc((100% - 1240px) / 2));
   display: grid;
   grid-template-columns: 300px 1fr;
   gap: 60px;
