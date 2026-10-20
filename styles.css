@@ -586,6 +586,52 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .faq-item[open] summary::after { transform: rotate(-135deg); margin: 6px 0 0; }
 .faq-item p { padding: 0 0 24px; font: 500 18px/1.5 Inter, sans-serif; color: #71717a; }
 
+/* ============ NOSSA EQUIPE ============ */
+.time {
+  padding: 120px 0 120px max(50px, calc((100% - 1240px) / 2));
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 60px;
+  align-items: start;
+  overflow: hidden;
+}
+.time-texto { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding-top: 10px; }
+.time-texto h2 { font-weight: 600; font-size: 54.4px; line-height: 1.05; letter-spacing: -1.1px; }
+.time-texto h2 span { color: var(--ciano); }
+.time-texto p { font-size: 17px; line-height: 27px; color: var(--cinza-texto); }
+.time-setas { display: flex; gap: 12px; margin-top: 14px; }
+.time-seta {
+  width: 50px; height: 50px;
+  display: grid; place-items: center;
+  background: rgba(0, 0, 0, .25);
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 50%;
+  color: #fff; cursor: pointer;
+  transition: border-color .2s, color .2s, opacity .2s;
+}
+.time-seta:hover { border-color: var(--ciano-forte); color: var(--ciano-forte); }
+.time-seta:disabled { opacity: .35; cursor: default; border-color: rgba(255, 255, 255, .14); color: #fff; }
+/* o trilho vai até a borda direita da tela; o último card ganha respiro no fim */
+.time-trilho {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.time-trilho::-webkit-scrollbar { display: none; }
+.time-lista { list-style: none; display: flex; gap: 22px; padding-right: max(50px, calc((100vw - 1240px) / 2)); width: max-content; }
+.time-card {
+  width: 300px; flex-shrink: 0;
+  scroll-snap-align: start;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: #000a2b;
+  transition: transform .35s ease, border-color .35s ease;
+}
+.time-card img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.time-card:hover { transform: translateY(-6px); border-color: rgba(56, 215, 255, .4); }
+
 /* ============ RODAPÉ ============ */
 /* mesmas margens laterais das outras seções (conteúdo em 1240px) */
 .footer {
@@ -686,6 +732,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .footer-top { grid-template-columns: 1fr 1fr 1fr; gap: 50px 40px; }
   .footer-marca { grid-column: 1 / -1; }
   .footer-cta { flex-direction: column; align-items: flex-start; }
+  .time { grid-template-columns: 1fr; gap: 40px; }
 }
 
 @media (max-width: 900px) {
@@ -753,6 +800,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .faq-item summary { font-size: 18px; }
   .faq-item p { font-size: 16px; }
 
+  .time { grid-template-columns: 1fr; gap: 36px; padding: 80px 0 80px 16px; }
+  .time-texto { padding-right: 16px; }
+  .time-texto h2 { font-size: 40px; }
+  .time-card { width: 74vw; max-width: 300px; }
+  .time-lista { padding-right: 16px; gap: 14px; }
   .footer { padding: 60px 16px 0; }
   .footer-cta { padding: 34px 22px; border-radius: 20px; }
   .footer-cta h2 { font-size: 30px; line-height: 38px; }

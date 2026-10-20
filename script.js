@@ -91,6 +91,26 @@ if (carrossel) {
   }, { threshold: 0.2 }).observe(carrossel);
 }
 
+// ============ CARROSSEL DA EQUIPE ============
+// setas andam um card por vez; ficam apagadas quando não há mais pra onde ir
+const trilho = document.querySelector('.time-trilho');
+if (trilho) {
+  const setas = document.querySelectorAll('.time-seta');
+  const passo = () => {
+    const card = trilho.querySelector('.time-card');
+    return card.offsetWidth + parseFloat(getComputedStyle(card.parentElement).gap || 0);
+  };
+  const atualizarSetas = () => {
+    const fim = trilho.scrollWidth - trilho.clientWidth - 2;
+    setas[0].disabled = trilho.scrollLeft <= 2;
+    setas[1].disabled = trilho.scrollLeft >= fim;
+  };
+  setas.forEach((b) => b.addEventListener('click', () => trilho.scrollBy({ left: passo() * +b.dataset.dir })));
+  trilho.addEventListener('scroll', () => requestAnimationFrame(atualizarSetas), { passive: true });
+  window.addEventListener('resize', atualizarSetas);
+  atualizarSetas();
+}
+
 // ============ GALERIA: fotos se abrem com o scroll ============
 const galeria = document.querySelector('.galeria');
 const texto = document.querySelector('.galeria-texto');
