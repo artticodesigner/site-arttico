@@ -96,10 +96,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .nav-menu a:hover { background: rgba(255, 255, 255, .08); color: var(--ciano); }
 
 /* ============ HERO ============ */
+/* hero ocupa exatamente a altura da tela: a faixa de clientes fica sempre visível no rodapé dela */
 .hero {
   position: relative;
-  height: 900px;
   min-height: 100vh;
+  min-height: 100svh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -107,13 +108,13 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .hero-content {
   position: relative;
   flex: 1;
-  padding: 264px 25px 0;
-  display: flex; flex-direction: column; align-items: center;
+  padding: max(120px, 13vh) 25px max(28px, 4vh);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .hero-title {
   padding: 31px 0;
   font-weight: 600;
-  font-size: 70.4px;
+  font-size: clamp(46px, 7.8vh, 70.4px);
   line-height: 1;
   letter-spacing: -.5px;
   text-align: center;
@@ -171,7 +172,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .hero-title .p, .entra { opacity: 1; transform: none; filter: none; animation: none; }
   .hero-title .destaque .p { animation: none; background-position: 50% 0; }
 }
-.hero-row { display: flex; align-items: center; gap: 53px; margin-top: 40px; }
+.hero-row { display: flex; align-items: center; gap: 53px; margin-top: clamp(16px, 4vh, 40px); }
 .btn-hero {
   flex-shrink: 0;
   display: flex; align-items: center; gap: 25px;
