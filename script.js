@@ -440,10 +440,10 @@ const observarTamanho = new ResizeObserver(() => {
 });
 FUNDOS.forEach((f) => f.caixa && observarTamanho.observe(f.caixa));
 
-// ============ HERO: GRADIENTE LÍQUIDO ANIMADO (WebGL) ============
-// Baseado na arte de referência: faixa diagonal de luz — ciano no alto à direita, azul forte no meio,
-// verde-azulado embaixo à esquerda — sobre azul-marinho quase preto. O "líquido" vem de ruído
-// (domain warping) que deforma a faixa devagar. Pausa fora da tela; com "reduzir movimento", fica parado.
+// ============ HERO: LUZES ANIMADAS (WebGL) ============
+// Baseado na arte de referência: focos de luz desfocados e dois feixes suaves ao longo da diagonal —
+// ciano no alto à direita, azul no meio, verde-azulado embaixo à esquerda — sobre azul-marinho quase preto,
+// com granulação de filme por cima. Pausa fora da tela; com "reduzir movimento", fica parado.
 (function () {
   const tela = document.querySelector('.hero-liquido');
   if (!tela) return;
@@ -456,18 +456,8 @@ precision highp float;
 uniform vec2 res;
 uniform float t;
 
-float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-float noise(vec2 p){
-  vec2 i = floor(p), f = fract(p);
-  vec2 u = f * f * (3.0 - 2.0 * f);
-  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
-             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
-}
-float fbm(vec2 p){
-  float v = 0.0, a = 0.5;
-  for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.03 + 17.0; a *= 0.5; }
-  return v;
-}
+// sorteio sem padrões visíveis (hash de Dave Hoskins)
+float hash(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 
 // cores medidas na imagem de referência
 const vec3 MARINHO = vec3(0.000, 0.012, 0.129);  // #000321
@@ -476,11 +466,15 @@ const vec3 AZUL    = vec3(0.000, 0.502, 0.784);  // #0080c8
 const vec3 AZUL2   = vec3(0.000, 0.325, 0.635);  // #0053a2
 const vec3 TEAL    = vec3(0.000, 0.506, 0.612);  // #00819c
 
-vec3 corDaFaixa(float s){
-  vec3 c = mix(CIANO, AZUL, smoothstep(0.05, 0.35, s));
-  c = mix(c, AZUL2, smoothstep(0.35, 0.58, s));
-  c = mix(c, TEAL, smoothstep(0.58, 0.82, s));
-  return c;
+// foco de luz desfocado (bokeh grande)
+float foco(vec2 p, vec2 c, float r){ vec2 d = p - c; return exp(-dot(d, d) / (r * r)); }
+
+// feixe de luz diagonal suave
+float feixe(vec2 p, vec2 origem, vec2 dir, float largura){
+  vec2 n = vec2(-dir.y, dir.x);
+  float d = dot(p - origem, n);
+  float ao_longo = dot(p - origem, dir);
+  return exp(-(d * d) / (largura * largura)) * smoothstep(-0.2, 0.6, ao_longo);
 }
 
 void main(){
@@ -488,31 +482,29 @@ void main(){
   uv.y = 1.0 - uv.y;                     // y para baixo, como na imagem
   float asp = res.x / res.y;
   vec2 p = vec2(uv.x * asp, uv.y);
+  float tt = t * 0.12;
 
-  // deformação líquida em duas camadas
-  float tt = t * 0.06;
-  vec2 q = vec2(fbm(p * 1.3 + vec2(0.0, tt)), fbm(p * 1.3 + vec2(5.2, -tt * 0.8)));
-  vec2 r = vec2(fbm(p * 1.1 + 2.2 * q + vec2(1.7, 9.2) + tt * 0.7),
-                fbm(p * 1.1 + 2.2 * q + vec2(8.3, 2.8) - tt * 0.6));
-  vec2 w = p + (r - 0.5) * 0.55;
+  // focos flutuando devagar ao longo da diagonal (alto à direita → embaixo à esquerda)
+  vec3 luz = vec3(0.0);
+  luz += CIANO * 0.95 * foco(p, vec2(asp * (0.93 + 0.05 * sin(tt * 0.9)), 0.16 + 0.07 * cos(tt * 0.7)), 0.34);
+  luz += AZUL  * 0.85 * foco(p, vec2(asp * (0.68 + 0.07 * sin(tt * 0.6 + 1.3)), 0.40 + 0.08 * sin(tt * 0.8)), 0.36);
+  luz += AZUL2 * 0.70 * foco(p, vec2(asp * (0.55 + 0.06 * cos(tt * 0.5 + 2.1)), 0.62 + 0.06 * sin(tt * 0.9 + 0.4)), 0.32);
+  luz += TEAL  * 0.80 * foco(p, vec2(asp * (0.36 + 0.07 * sin(tt * 0.7 + 3.0)), 0.90 + 0.06 * cos(tt * 0.6)), 0.38);
+  luz += CIANO * 0.35 * foco(p, vec2(asp * (0.80 + 0.10 * sin(tt * 0.4 + 4.2)), 0.30 + 0.10 * cos(tt * 0.5 + 1.0)), 0.16);
+  luz += AZUL  * 0.30 * foco(p, vec2(asp * (0.45 + 0.10 * cos(tt * 0.45 + 0.7)), 0.78 + 0.08 * sin(tt * 0.55)), 0.15);
 
-  // eixo da faixa: do alto à direita até embaixo, um pouco à esquerda do centro
-  vec2 A = vec2(asp * 1.02, -0.08);
-  vec2 B = vec2(asp * 0.22, 1.12);
-  vec2 ab = B - A;
-  float s = clamp(dot(w - A, ab) / dot(ab, ab), 0.0, 1.0);
-  float d = length(w - (A + ab * s));
+  // dois feixes de luz entrando pelo alto à direita, pulsando de leve
+  vec2 dir = normalize(vec2(-asp * 0.62, 1.0));
+  luz += CIANO * 0.22 * (0.6 + 0.4 * sin(tt * 1.3)) * feixe(p, vec2(asp * 1.05, -0.05), dir, 0.10 + 0.02 * sin(tt));
+  luz += AZUL  * 0.18 * (0.6 + 0.4 * sin(tt * 1.1 + 2.0)) * feixe(p, vec2(asp * 0.92, -0.10), normalize(dir + vec2(0.12, 0.0)), 0.07);
 
-  float largura = 0.30 + 0.10 * sin(s * 6.0 + t * 0.15) + 0.08 * (r.x - 0.5);
-  float luz = exp(-(d * d) / (largura * largura));
-  luz *= mix(1.0, 0.72, smoothstep(0.42, 0.6, s) * (1.0 - smoothstep(0.6, 0.78, s))); // “respiro” mais escuro no meio, como na arte
-  luz *= 0.92;
+  // soma das luzes com compressão suave (não estoura no branco)
+  vec3 cor = MARINHO + (1.0 - exp(-luz * 0.95));
+  cor *= 1.0 - 0.35 * smoothstep(0.55, 0.0, uv.x) * (1.0 - clamp(length(luz), 0.0, 1.0)); // esquerda mais funda
 
-  vec3 cor = mix(MARINHO, corDaFaixa(s + (q.x - 0.5) * 0.12), clamp(luz, 0.0, 1.0));
-  cor *= 1.0 - 0.35 * smoothstep(0.55, 0.0, uv.x) * (1.0 - luz); // lado esquerdo mais fundo
-
-  // grão, como na referência
-  cor += (hash(gl_FragCoord.xy + fract(t) * 91.0) - 0.5) * 0.035;
+  // ruído: granulação de filme animada
+  float g = hash(gl_FragCoord.xy + floor(fract(t * 0.37) * 997.0) * vec2(13.0, 7.0));
+  cor += (g - 0.5) * 0.075;
   gl_FragColor = vec4(cor, 1.0);
 }`;
 
@@ -543,9 +535,9 @@ void main(){
   const uRes = gl.getUniformLocation(prog, 'res');
   const uT = gl.getUniformLocation(prog, 't');
 
-  // resolução interna reduzida: o degradê é suave, e assim roda leve até em celular
+  // resolução cheia (até 1,5x) para o grão ficar fino; o shader é leve
   function ajustar() {
-    const esc = Math.min(window.devicePixelRatio || 1, 1.5) * 0.6;
+    const esc = Math.min(window.devicePixelRatio || 1, 1.5);
     const w = Math.max(1, Math.round(tela.clientWidth * esc));
     const h = Math.max(1, Math.round(tela.clientHeight * esc));
     if (tela.width !== w || tela.height !== h) {
