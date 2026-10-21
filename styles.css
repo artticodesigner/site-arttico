@@ -297,15 +297,24 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   transition: transform .2s;
 }
 .btn-pill:hover { transform: translateY(-2px); }
-.servicos-cards { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+/* cards empilhando: cada um gruda no alto e o próximo para por cima, um pouco mais abaixo */
+.servicos-cards { flex: 1; display: flex; flex-direction: column; gap: 22vh; padding-bottom: 6vh; }
 .card {
+  position: sticky;
+  top: calc(140px + var(--i, 0) * 22px);
   padding: 36px 40px 40px;
-  background: linear-gradient(160deg, rgba(56, 215, 255, .04), rgba(0, 0, 0, .3) 45%);
-  border: 1px solid rgba(255, 255, 255, .1);
+  /* fundo sólido para cobrir o card de baixo */
+  background: linear-gradient(160deg, #04234f, #020c33 45%, #010726);
+  border: 1px solid rgba(255, 255, 255, .12);
   border-radius: 16px;
-  transition: border-color .3s, box-shadow .3s, opacity .8s ease, transform .8s ease;
+  box-shadow: 0 -12px 40px rgba(0, 2, 20, .45);
+  transform-origin: 50% 0;
+  transform: scale(var(--escala, 1));
+  filter: brightness(var(--brilho, 1));
+  transition: border-color .3s;
+  will-change: transform;
 }
-.card:hover { border-color: rgba(56, 215, 255, .35); box-shadow: 0 0 40px rgba(56, 215, 255, .08); }
+.card:hover { border-color: rgba(56, 215, 255, .35); }
 .card-icon {
   width: 64px; height: 64px;
   display: grid; place-items: center;
@@ -788,7 +797,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .stat strong { font-size: 54px; line-height: 70px; letter-spacing: -3px; }
 
   .servicos-side h2 { font-size: 42px; line-height: 50px; }
-  .card { padding: 28px 22px; min-height: 0; }
+  .card { padding: 28px 22px; min-height: 0; top: calc(96px + var(--i, 0) * 14px); }
+  .servicos-cards { gap: 16vh; }
   .card-icon { margin-bottom: 28px; }
 
   .dif-box h2 { font-size: 30px; line-height: 40px; }

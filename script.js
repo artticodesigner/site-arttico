@@ -73,6 +73,30 @@ const obs = new IntersectionObserver((entradas) => {
 }, { threshold: 0.2 });
 document.querySelectorAll('.reveal, .contador').forEach((el) => obs.observe(el));
 
+// ============ CARDS DE SERVIÇO EMPILHANDO ============
+// conforme o próximo card cobre o anterior, o de baixo encolhe e escurece um pouco
+const cardsServico = [...document.querySelectorAll('.servicos-cards .card')];
+function empilharCards() {
+  cardsServico.forEach((card, i) => {
+    const prox = cardsServico[i + 1];
+    let cobertura = 0;
+    if (prox) {
+      const a = card.getBoundingClientRect(), b = prox.getBoundingClientRect();
+      cobertura = Math.max(0, Math.min(1, (a.bottom - b.top) / a.height));
+    }
+    // quanto mais cards por cima, mais ele recua
+    const depois = cardsServico.slice(i + 2).filter((c) => c.getBoundingClientRect().top <= card.getBoundingClientRect().top + 60).length;
+    const recuo = cobertura + depois * 0.6;
+    card.style.setProperty('--escala', (1 - recuo * 0.045).toFixed(4));
+    card.style.setProperty('--brilho', (1 - recuo * 0.22).toFixed(3));
+  });
+}
+if (cardsServico.length) {
+  window.addEventListener('scroll', () => requestAnimationFrame(empilharCards), { passive: true });
+  window.addEventListener('resize', empilharCards);
+  empilharCards();
+}
+
 // ============ CARROSSEL DO QUEM SOMOS ============
 // troca de foto a cada 4,5 s; só roda enquanto a seção está visível
 const carrossel = document.querySelector('.quem-carrossel');
