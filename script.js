@@ -442,8 +442,7 @@ FUNDOS.forEach((f) => f.caixa && observarTamanho.observe(f.caixa));
 
 // ============ HERO: LUZES ANIMADAS (WebGL) ============
 // Baseado na arte de referência: focos de luz desfocados e dois feixes suaves ao longo da diagonal —
-// ciano no alto à direita, azul no meio, verde-azulado embaixo à esquerda — sobre azul-marinho quase preto,
-// com granulação de filme por cima. Pausa fora da tela; com "reduzir movimento", fica parado.
+// ciano no alto à direita, azul no meio, verde-azulado embaixo à esquerda — sobre azul-marinho quase preto. Pausa fora da tela; com "reduzir movimento", fica parado.
 (function () {
   const tela = document.querySelector('.hero-liquido');
   if (!tela) return;
@@ -482,16 +481,17 @@ void main(){
   uv.y = 1.0 - uv.y;                     // y para baixo, como na imagem
   float asp = res.x / res.y;
   vec2 p = vec2(uv.x * asp, uv.y);
-  float tt = t * 0.12;
+  float tt = t * 0.2;   // velocidade das luzes
+  const float M = 1.8;  // amplitude do movimento
 
   // focos flutuando devagar ao longo da diagonal (alto à direita → embaixo à esquerda)
   vec3 luz = vec3(0.0);
-  luz += CIANO * 0.95 * foco(p, vec2(asp * (0.93 + 0.05 * sin(tt * 0.9)), 0.16 + 0.07 * cos(tt * 0.7)), 0.34);
-  luz += AZUL  * 0.85 * foco(p, vec2(asp * (0.68 + 0.07 * sin(tt * 0.6 + 1.3)), 0.40 + 0.08 * sin(tt * 0.8)), 0.36);
-  luz += AZUL2 * 0.70 * foco(p, vec2(asp * (0.55 + 0.06 * cos(tt * 0.5 + 2.1)), 0.62 + 0.06 * sin(tt * 0.9 + 0.4)), 0.32);
-  luz += TEAL  * 0.80 * foco(p, vec2(asp * (0.36 + 0.07 * sin(tt * 0.7 + 3.0)), 0.90 + 0.06 * cos(tt * 0.6)), 0.38);
-  luz += CIANO * 0.35 * foco(p, vec2(asp * (0.80 + 0.10 * sin(tt * 0.4 + 4.2)), 0.30 + 0.10 * cos(tt * 0.5 + 1.0)), 0.16);
-  luz += AZUL  * 0.30 * foco(p, vec2(asp * (0.45 + 0.10 * cos(tt * 0.45 + 0.7)), 0.78 + 0.08 * sin(tt * 0.55)), 0.15);
+  luz += CIANO * 0.95 * foco(p, vec2(asp * (0.93 + 0.05 * M * sin(tt * 0.9)), 0.16 + 0.07 * M * cos(tt * 0.7)), 0.34);
+  luz += AZUL  * 0.85 * foco(p, vec2(asp * (0.68 + 0.07 * M * sin(tt * 0.6 + 1.3)), 0.40 + 0.08 * M * sin(tt * 0.8)), 0.36);
+  luz += AZUL2 * 0.70 * foco(p, vec2(asp * (0.55 + 0.06 * M * cos(tt * 0.5 + 2.1)), 0.62 + 0.06 * M * sin(tt * 0.9 + 0.4)), 0.32);
+  luz += TEAL  * 0.80 * foco(p, vec2(asp * (0.36 + 0.07 * M * sin(tt * 0.7 + 3.0)), 0.90 + 0.06 * M * cos(tt * 0.6)), 0.38);
+  luz += CIANO * 0.35 * foco(p, vec2(asp * (0.80 + 0.10 * M * sin(tt * 0.4 + 4.2)), 0.30 + 0.10 * M * cos(tt * 0.5 + 1.0)), 0.16);
+  luz += AZUL  * 0.30 * foco(p, vec2(asp * (0.45 + 0.10 * M * cos(tt * 0.45 + 0.7)), 0.78 + 0.08 * M * sin(tt * 0.55)), 0.15);
 
   // dois feixes de luz entrando pelo alto à direita, pulsando de leve
   vec2 dir = normalize(vec2(-asp * 0.62, 1.0));
@@ -502,9 +502,8 @@ void main(){
   vec3 cor = MARINHO + (1.0 - exp(-luz * 0.95));
   cor *= 1.0 - 0.35 * smoothstep(0.55, 0.0, uv.x) * (1.0 - clamp(length(luz), 0.0, 1.0)); // esquerda mais funda
 
-  // ruído: granulação de filme animada
-  float g = hash(gl_FragCoord.xy + floor(fract(t * 0.37) * 997.0) * vec2(13.0, 7.0));
-  cor += (g - 0.5) * 0.075;
+  // dither imperceptível (±0,5 tom) só para evitar faixas no degradê escuro
+  cor += (hash(gl_FragCoord.xy) - 0.5) / 255.0;
   gl_FragColor = vec4(cor, 1.0);
 }`;
 
