@@ -439,3 +439,144 @@ const observarTamanho = new ResizeObserver(() => {
   esperaFundo = setTimeout(desenharFundos, 200);
 });
 FUNDOS.forEach((f) => f.caixa && observarTamanho.observe(f.caixa));
+
+// ============ HERO: GRADIENTE LÍQUIDO ANIMADO (WebGL) ============
+// Baseado na arte de referência: faixa diagonal de luz — ciano no alto à direita, azul forte no meio,
+// verde-azulado embaixo à esquerda — sobre azul-marinho quase preto. O "líquido" vem de ruído
+// (domain warping) que deforma a faixa devagar. Pausa fora da tela; com "reduzir movimento", fica parado.
+(function () {
+  const tela = document.querySelector('.hero-liquido');
+  if (!tela) return;
+  const gl = tela.getContext('webgl', { antialias: false, premultipliedAlpha: false });
+  if (!gl) return; // sem WebGL fica o degradê CSS de reserva
+
+  const vert = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+  const frag = `
+precision highp float;
+uniform vec2 res;
+uniform float t;
+
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p){
+  vec2 i = floor(p), f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+float fbm(vec2 p){
+  float v = 0.0, a = 0.5;
+  for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.03 + 17.0; a *= 0.5; }
+  return v;
+}
+
+// cores medidas na imagem de referência
+const vec3 MARINHO = vec3(0.000, 0.012, 0.129);  // #000321
+const vec3 CIANO   = vec3(0.020, 0.706, 0.765);  // #05b4c3
+const vec3 AZUL    = vec3(0.000, 0.502, 0.784);  // #0080c8
+const vec3 AZUL2   = vec3(0.000, 0.325, 0.635);  // #0053a2
+const vec3 TEAL    = vec3(0.000, 0.506, 0.612);  // #00819c
+
+vec3 corDaFaixa(float s){
+  vec3 c = mix(CIANO, AZUL, smoothstep(0.05, 0.35, s));
+  c = mix(c, AZUL2, smoothstep(0.35, 0.58, s));
+  c = mix(c, TEAL, smoothstep(0.58, 0.82, s));
+  return c;
+}
+
+void main(){
+  vec2 uv = gl_FragCoord.xy / res;
+  uv.y = 1.0 - uv.y;                     // y para baixo, como na imagem
+  float asp = res.x / res.y;
+  vec2 p = vec2(uv.x * asp, uv.y);
+
+  // deformação líquida em duas camadas
+  float tt = t * 0.06;
+  vec2 q = vec2(fbm(p * 1.3 + vec2(0.0, tt)), fbm(p * 1.3 + vec2(5.2, -tt * 0.8)));
+  vec2 r = vec2(fbm(p * 1.1 + 2.2 * q + vec2(1.7, 9.2) + tt * 0.7),
+                fbm(p * 1.1 + 2.2 * q + vec2(8.3, 2.8) - tt * 0.6));
+  vec2 w = p + (r - 0.5) * 0.55;
+
+  // eixo da faixa: do alto à direita até embaixo, um pouco à esquerda do centro
+  vec2 A = vec2(asp * 1.02, -0.08);
+  vec2 B = vec2(asp * 0.22, 1.12);
+  vec2 ab = B - A;
+  float s = clamp(dot(w - A, ab) / dot(ab, ab), 0.0, 1.0);
+  float d = length(w - (A + ab * s));
+
+  float largura = 0.30 + 0.10 * sin(s * 6.0 + t * 0.15) + 0.08 * (r.x - 0.5);
+  float luz = exp(-(d * d) / (largura * largura));
+  luz *= mix(1.0, 0.72, smoothstep(0.42, 0.6, s) * (1.0 - smoothstep(0.6, 0.78, s))); // “respiro” mais escuro no meio, como na arte
+  luz *= 0.92;
+
+  vec3 cor = mix(MARINHO, corDaFaixa(s + (q.x - 0.5) * 0.12), clamp(luz, 0.0, 1.0));
+  cor *= 1.0 - 0.35 * smoothstep(0.55, 0.0, uv.x) * (1.0 - luz); // lado esquerdo mais fundo
+
+  // grão, como na referência
+  cor += (hash(gl_FragCoord.xy + fract(t) * 91.0) - 0.5) * 0.035;
+  gl_FragColor = vec4(cor, 1.0);
+}`;
+
+  const sh = (tipo, src) => {
+    const s = gl.createShader(tipo);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  };
+  let prog;
+  try {
+    prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, vert));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, frag));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  } catch (e) {
+    console.warn('Gradiente da hero indisponível:', e.message);
+    return;
+  }
+  gl.useProgram(prog);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const uRes = gl.getUniformLocation(prog, 'res');
+  const uT = gl.getUniformLocation(prog, 't');
+
+  // resolução interna reduzida: o degradê é suave, e assim roda leve até em celular
+  function ajustar() {
+    const esc = Math.min(window.devicePixelRatio || 1, 1.5) * 0.6;
+    const w = Math.max(1, Math.round(tela.clientWidth * esc));
+    const h = Math.max(1, Math.round(tela.clientHeight * esc));
+    if (tela.width !== w || tela.height !== h) {
+      tela.width = w; tela.height = h;
+      gl.viewport(0, 0, w, h);
+    }
+  }
+
+  const parado = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let visivel = true, rodando = false, inicio = performance.now();
+  const desenhar = (agora) => {
+    ajustar();
+    gl.uniform2f(uRes, tela.width, tela.height);
+    gl.uniform1f(uT, 40 + (agora - inicio) / 1000);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+  const quadro = (agora) => {
+    if (!visivel || document.hidden || parado.matches) { rodando = false; return; }
+    desenhar(agora);
+    requestAnimationFrame(quadro);
+  };
+  const tocar = () => {
+    if (rodando || parado.matches) return;
+    rodando = true;
+    requestAnimationFrame(quadro);
+  };
+
+  desenhar(performance.now());
+  tela.classList.add('pronto');
+  new IntersectionObserver(([e]) => { visivel = e.isIntersecting; if (visivel) tocar(); }).observe(tela);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) tocar(); });
+  window.addEventListener('resize', () => { if (!rodando) desenhar(performance.now()); });
+  tocar();
+})();

@@ -119,16 +119,22 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   text-align: center;
 }
 /* Brilho ciano bem suave atrás do título (o fundo é o degradê da página) */
-.hero::before {
+/* Fundo da hero: gradiente líquido em WebGL (script.js). O degradê CSS é a reserva até ele carregar. */
+.hero { background:
+    radial-gradient(45% 60% at 92% 18%, rgba(5, 180, 195, .55), transparent 70%),
+    radial-gradient(55% 70% at 62% 45%, rgba(0, 110, 200, .5), transparent 70%),
+    radial-gradient(45% 55% at 35% 95%, rgba(0, 129, 156, .45), transparent 70%),
+    #000321; }
+.hero-liquido { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s ease; }
+.hero-liquido.pronto { opacity: 1; }
+/* emenda suave com o resto da página e contraste para o título */
+.hero::after {
   content: "";
-  position: absolute; left: 50%; top: 38%;
-  width: min(1100px, 120vw); height: 620px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, rgba(56, 215, 255, .11), rgba(56, 215, 255, .04) 55%, transparent);
+  position: absolute; inset: 0;
+  background: radial-gradient(60% 45% at 50% 42%, rgba(0, 3, 33, .35), transparent 75%);
   pointer-events: none;
-  animation: respira 7s ease-in-out infinite alternate;
 }
-@keyframes respira { from { opacity: .7; } to { opacity: 1; } }
+.hero-content, .logos { z-index: 1; }
 
 /* Título: cada palavra sobe saindo do desfoque, uma depois da outra */
 .hero-title .linha { display: block; }
@@ -164,7 +170,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 @media (prefers-reduced-motion: reduce) {
   .hero-title .p, .entra { opacity: 1; transform: none; filter: none; animation: none; }
   .hero-title .destaque .p { animation: none; background-position: 50% 0; }
-  .hero::before { animation: none; }
 }
 .hero-row { display: flex; align-items: center; gap: 53px; margin-top: 40px; }
 .btn-hero {
