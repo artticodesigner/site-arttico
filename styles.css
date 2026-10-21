@@ -564,6 +564,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   width: 448px; flex-shrink: 0;
   padding: 51px 0 51px 48px;
   background: rgba(0, 0, 0, .15);
+  border: 1px solid rgba(163, 227, 240, .28);
   border-radius: 17px;
   box-shadow: 0 0 60px rgba(0, 0, 0, .25);
   display: flex; flex-direction: column; gap: 37px;
