@@ -38,24 +38,27 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .reveal.visivel { opacity: 1; transform: none; }
 
 /* ============ NAV ============ */
+/* barra fixa de largura total; conteúdo alinhado às seções */
 .nav {
   position: fixed;
-  top: 23px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(1085px, calc(100% - 32px));
-  height: 85px;
-  padding: 0 25px 0 29px;
+  top: 0; left: 0; right: 0;
+  height: 80px;
+  padding: 0 max(32px, calc((100% - 1340px) / 2));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(2, 8, 40, .8);
-  border: 1px solid rgba(255, 255, 255, .1);
-  box-shadow: 0 10px 40px rgba(0, 4, 30, .25);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border-radius: 12px;
+  background: rgba(1, 6, 34, .55);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  transition: background .3s ease, box-shadow .3s ease, height .3s ease;
   z-index: 100;
+}
+/* depois de rolar um pouco, a barra fica mais sólida e um pouco mais baixa */
+.nav.rolou {
+  height: 68px;
+  background: rgba(1, 6, 34, .9);
+  box-shadow: 0 8px 30px rgba(0, 2, 20, .35);
 }
 .nav-logo img { width: 135px; height: auto; }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
@@ -528,39 +531,28 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 
 /* ============ INSTAGRAM ============ */
 .insta {
+  padding: 90px max(50px, calc((100% - 1340px) / 2));
+}
+.insta-grade { display: grid; grid-template-columns: repeat(3, 1fr); }
+.insta-item {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: 137px 20px 100px;
-  text-align: center;
-}
-/* degradê desenhado pelo script.js (igual ao do Framer); o CSS abaixo é só a reserva até ele rodar */
-.insta-fundo {
-  position: absolute; inset: 0; z-index: -1;
-  background:
-    radial-gradient(55% 45% at 85% 30%, rgba(1, 160, 190, .8), transparent 70%),
-    radial-gradient(50% 40% at 20% 75%, rgba(0, 100, 130, .7), transparent 70%),
-    #000a2e;
-}
-.insta-fundo canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.insta h2 { font-weight: 500; font-size: 41.6px; line-height: 1.2; letter-spacing: -.8px; }
-.insta h2 span { color: var(--ciano); }
-.insta-posts {
-  margin-top: 35px;
-  display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
-}
-/* Moldura que mostra só o cabeçalho + a mídia do post (corta curtidas e comentários) */
-.insta-post {
-  width: 326px; height: 462px;
-  overflow: hidden;
-  border-radius: 4px;
-  background: #fff;
-}
-.insta-posts iframe {
   display: block;
-  width: 326px; height: 700px;
-  border: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #020c33;
 }
+.insta-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.insta-icone {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(1, 8, 40, .45);
+  color: #fff;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.insta-icone svg { width: 46px; height: 46px; }
+.insta-item:hover img { transform: scale(1.04); }
+.insta-item:hover .insta-icone, .insta-item:focus-visible .insta-icone { opacity: 1; }
 
 /* ============ FAQ ============ */
 .faq {
@@ -684,9 +676,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .footer-cta {
   display: flex; justify-content: space-between; align-items: center; gap: 40px;
   padding: 50px 60px;
-  /* foto de icebergs desfocada (já vem desfocada no arquivo) + camada azul-escura para o texto ficar legível */
+  /* foto de icebergs levemente desfocada (já vem assim no arquivo) + camada azul-escura para o texto ficar legível */
   background:
-    linear-gradient(100deg, rgba(1, 8, 40, .9) 0%, rgba(0, 22, 75, .72) 50%, rgba(0, 45, 110, .5) 100%),
+    linear-gradient(100deg, rgba(1, 8, 40, .88) 0%, rgba(0, 20, 70, .6) 45%, rgba(0, 40, 100, .22) 100%),
     url(assets/cta-gelo.webp) center / cover no-repeat,
     #020c33;
   border: 1px solid rgba(255, 255, 255, .14);
@@ -777,7 +769,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 }
 
 @media (max-width: 640px) {
-  .nav { top: 12px; height: 68px; padding: 0 12px 0 16px; }
+  .nav, .nav.rolou { height: 64px; padding: 0 16px; }
+  .nav-menu { right: 16px; }
   .nav-logo img { width: 105px; }
   .btn-saiba { height: 40px; padding: 0 14px; font-size: 15px; }
   .btn-menu { width: 40px; height: 40px; }
@@ -822,9 +815,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .dep-stat { width: 100%; }
   .dep-card { width: 300px; padding: 30px; }
 
-  .insta { padding: 80px 16px; }
-  .insta h2 { font-size: 30px; }
-  .insta-post { width: 326px; }
+  .insta { padding: 60px 0; }
+  /* no celular os posts passam de lado, arrastando */
+  .insta-grade { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .insta-grade::-webkit-scrollbar { display: none; }
+  .insta-item { flex: 0 0 82vw; scroll-snap-align: center; }
 
   .faq { padding: 70px 16px 40px; }
   .faq-card { padding: 40px 24px; }
