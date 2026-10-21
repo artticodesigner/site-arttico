@@ -684,9 +684,14 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .footer-cta {
   display: flex; justify-content: space-between; align-items: center; gap: 40px;
   padding: 50px 60px;
-  background: rgba(0, 0, 0, .3);
-  border: 1px solid rgba(255, 255, 255, .12);
+  /* foto de icebergs desfocada (já vem desfocada no arquivo) + camada azul-escura para o texto ficar legível */
+  background:
+    linear-gradient(100deg, rgba(1, 8, 40, .9) 0%, rgba(0, 22, 75, .72) 50%, rgba(0, 45, 110, .5) 100%),
+    url(assets/cta-gelo.webp) center / cover no-repeat,
+    #020c33;
+  border: 1px solid rgba(255, 255, 255, .14);
   border-radius: 27px;
+  overflow: hidden;
 }
 .footer-cta h2 {
   margin-top: 14px;
