@@ -621,6 +621,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   scrollbar-width: none;
 }
 .time-trilho::-webkit-scrollbar { display: none; }
+/* arrastar com o mouse */
+.time-trilho { cursor: grab; user-select: none; -webkit-user-select: none; }
+.time-trilho.arrastando { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
+.time-trilho.arrastando .time-card { transform: none; pointer-events: none; }
+.time-card img { -webkit-user-drag: none; }
 .time-lista { list-style: none; display: flex; gap: 22px; padding-right: max(50px, calc((100vw - 1240px) / 2)); width: max-content; }
 .time-card {
   width: 300px; flex-shrink: 0;

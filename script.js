@@ -109,6 +109,33 @@ if (trilho) {
   trilho.addEventListener('scroll', () => requestAnimationFrame(atualizarSetas), { passive: true });
   window.addEventListener('resize', atualizarSetas);
   atualizarSetas();
+
+  // arrastar com o mouse (no celular o dedo já arrasta nativamente)
+  let arrastando = false, inicioX = 0, inicioScroll = 0;
+  trilho.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    arrastando = true;
+    inicioX = e.clientX;
+    inicioScroll = trilho.scrollLeft;
+    trilho.classList.add('arrastando');
+    trilho.setPointerCapture(e.pointerId);
+  });
+  trilho.addEventListener('pointermove', (e) => {
+    if (!arrastando) return;
+    trilho.scrollLeft = inicioScroll - (e.clientX - inicioX);
+  });
+  const soltar = () => {
+    if (!arrastando) return;
+    arrastando = false;
+    // encaixa no card mais próximo
+    const p = passo();
+    const alvo = Math.round(trilho.scrollLeft / p) * p;
+    trilho.classList.remove('arrastando');
+    trilho.scrollTo({ left: alvo });
+  };
+  trilho.addEventListener('pointerup', soltar);
+  trilho.addEventListener('pointercancel', soltar);
+  trilho.addEventListener('dragstart', (e) => e.preventDefault());
 }
 
 // ============ GALERIA: fotos se abrem com o scroll ============
