@@ -533,7 +533,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .insta {
   padding: 90px max(50px, calc((100% - 1340px) / 2));
 }
-.insta-grade { display: grid; grid-template-columns: repeat(3, 1fr); }
+.insta-grade { display: grid; grid-template-columns: repeat(4, 1fr); }
 .insta-item {
   position: relative;
   display: block;
