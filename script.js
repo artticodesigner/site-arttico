@@ -431,8 +431,8 @@ void main(){
   uv.y = 1.0 - uv.y;                     // y para baixo, como na imagem
   float asp = res.x / res.y;
   vec2 p = vec2(uv.x * asp, uv.y);
-  float tt = t * 0.2;   // velocidade das luzes
-  const float M = 1.8;  // amplitude do movimento
+  float tt = t * 0.28;  // velocidade das luzes
+  const float M = 2.3;  // amplitude do movimento
 
   // focos flutuando devagar ao longo da diagonal (alto à direita → embaixo à esquerda)
   vec3 luz = vec3(0.0);
