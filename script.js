@@ -457,7 +457,7 @@ void main(){
   luz += CIANO * 0.45 * foco(q, CENTRO(0.37, 0.33, 2.7), 0.20 * esc);
   luz += AZUL  * 0.40 * foco(q, CENTRO(0.29, 0.41, 4.4), 0.18 * esc);
 
-  luz *= mix(0.8, 1.0, (esc - 0.5) * 2.0);
+  luz *= mix(0.5, 1.0, (esc - 0.5) * 2.0);  // celular mais escuro
 
   // vazio arredondado onde o cursor está: a luz “foge” dele
   luz *= 1.0 - 0.7 * forca * exp(-d2 / (0.51 * 0.51));
