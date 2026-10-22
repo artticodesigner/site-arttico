@@ -439,7 +439,7 @@ void main(){
   // repulsão: a luz perto do cursor é empurrada para fora (deslocamento suave, sem emenda no centro)
   vec2 dm = p - mouse;
   float d2 = dot(dm, dm);
-  float raio = 0.30;
+  float raio = 0.90;
   float campo = forca * exp(-d2 / (raio * raio));
   vec2 q = p - dm * 0.9 * campo;
 
@@ -455,7 +455,7 @@ void main(){
   luz += AZUL  * 0.40 * foco(q, CENTRO(0.29, 0.41, 4.4), 0.18);
 
   // vazio arredondado onde o cursor está: a luz “foge” dele
-  luz *= 1.0 - 0.7 * forca * exp(-d2 / (0.17 * 0.17));
+  luz *= 1.0 - 0.7 * forca * exp(-d2 / (0.51 * 0.51));
 
   // soma das luzes com compressão suave (não estoura no branco)
   vec3 cor = MARINHO + (1.0 - exp(-luz * 0.95));
