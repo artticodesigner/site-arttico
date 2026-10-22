@@ -41,9 +41,9 @@ document.querySelectorAll('.t-row[data-r]').forEach((row) => {
   row.setAttribute('role', 'row');
   row.innerHTML =
     `<div class="t-cell t-feat" role="cell">${ICONES[nome] || ''}${nome}</div>` +
-    `<div class="t-cell t-hl" role="cell">${CELULAS[a]}</div>` +
-    `<div class="t-cell" role="cell">${CELULAS[b]}</div>` +
-    `<div class="t-cell" role="cell">${CELULAS[c]}</div>`;
+    `<div class="t-cell t-hl" role="cell" data-col="ARTTICO">${CELULAS[a]}</div>` +
+    `<div class="t-cell" role="cell" data-col="Agência tradicional">${CELULAS[b]}</div>` +
+    `<div class="t-cell" role="cell" data-col="Soluções isoladas">${CELULAS[c]}</div>`;
 });
 
 // ============ ESTRELAS ============

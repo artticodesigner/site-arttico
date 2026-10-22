@@ -879,3 +879,32 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   }
   .nav-menu a:hover::after { transform: scaleX(1); }
 }
+
+/* ============ TABELA COMPARATIVA NO CELULAR: um card por categoria ============ */
+@media (max-width: 640px) {
+  .tabela-wrap { overflow: visible; margin-top: 28px; }
+  .tabela { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+  .t-row.t-head { display: none; }
+  .t-row, .t-row:nth-last-child(2) {
+    display: flex; flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, .25);
+  }
+  .t-cell, .t-cell + .t-cell:not(.t-hl) {
+    min-height: 0;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    font-size: 14px;
+  }
+  .t-cell[data-col]::before { content: attr(data-col); color: rgba(255, 255, 255, .75); font-size: 14px; }
+  .t-feat { padding: 16px 18px; gap: 12px; border-top: 0; font-size: 16px; font-weight: 600; justify-content: flex-start; }
+  .t-hl, .t-head .t-hl { border: 0; border-top: 1px solid rgba(56, 189, 248, .35); margin: 0; }
+  .t-hl[data-col]::before { color: #fff; font-weight: 700; }
+  .t-foot { border: 0; background: none; }
+  .t-foot .t-feat { display: none; }
+  .t-foot .t-hl { border: 0; border-radius: 12px; min-height: 58px; }
+}
