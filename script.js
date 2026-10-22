@@ -446,13 +446,18 @@ void main(){
   // centro de cada foco: percorre a hero inteira em trajetórias (Lissajous) com ritmos diferentes
   #define CENTRO(fx, fy, ph) vec2(asp * (0.5 + 0.46 * sin(tt * fx + ph)), 0.5 + 0.44 * cos(tt * fy + ph * 1.7))
 
+  // em tela estreita (celular) os focos encolhem junto com a largura, senão viram um “zoom” que cobre tudo
+  float esc = clamp(asp, 0.5, 1.0);
+
   vec3 luz = vec3(0.0);
-  luz += CIANO * 0.95 * foco(q, CENTRO(0.31, 0.23, 0.0), 0.36);
-  luz += AZUL  * 0.85 * foco(q, CENTRO(0.21, 0.29, 1.9), 0.38);
-  luz += AZUL2 * 0.75 * foco(q, CENTRO(0.26, 0.17, 3.6), 0.34);
-  luz += TEAL  * 0.85 * foco(q, CENTRO(0.17, 0.27, 5.1), 0.38);
-  luz += CIANO * 0.45 * foco(q, CENTRO(0.37, 0.33, 2.7), 0.20);
-  luz += AZUL  * 0.40 * foco(q, CENTRO(0.29, 0.41, 4.4), 0.18);
+  luz += CIANO * 0.95 * foco(q, CENTRO(0.31, 0.23, 0.0), 0.36 * esc);
+  luz += AZUL  * 0.85 * foco(q, CENTRO(0.21, 0.29, 1.9), 0.38 * esc);
+  luz += AZUL2 * 0.75 * foco(q, CENTRO(0.26, 0.17, 3.6), 0.34 * esc);
+  luz += TEAL  * 0.85 * foco(q, CENTRO(0.17, 0.27, 5.1), 0.38 * esc);
+  luz += CIANO * 0.45 * foco(q, CENTRO(0.37, 0.33, 2.7), 0.20 * esc);
+  luz += AZUL  * 0.40 * foco(q, CENTRO(0.29, 0.41, 4.4), 0.18 * esc);
+
+  luz *= mix(0.8, 1.0, (esc - 0.5) * 2.0);
 
   // vazio arredondado onde o cursor está: a luz “foge” dele
   luz *= 1.0 - 0.7 * forca * exp(-d2 / (0.51 * 0.51));
