@@ -391,8 +391,9 @@ const observarTamanho = new ResizeObserver(() => {
 FUNDOS.forEach((f) => f.caixa && observarTamanho.observe(f.caixa));
 
 // ============ HERO: LUZES ANIMADAS (WebGL) ============
-// Baseado na arte de referência: focos de luz desfocados e dois feixes suaves ao longo da diagonal —
-// ciano no alto à direita, azul no meio, verde-azulado embaixo à esquerda — sobre azul-marinho quase preto. Pausa fora da tela; com "reduzir movimento", fica parado.
+// Baseado na arte de referência (ciano, azul e verde-azulado sobre azul-marinho quase preto): focos de luz
+// desfocados que passeiam pela hero inteira. O cursor repele a luz ao passar por cima.
+// Pausa fora da tela; com "reduzir movimento", fica parado e sem interação.
 (function () {
   const tela = document.querySelector('.hero-liquido');
   if (!tela) return;
@@ -404,6 +405,8 @@ FUNDOS.forEach((f) => f.caixa && observarTamanho.observe(f.caixa));
 precision highp float;
 uniform vec2 res;
 uniform float t;
+uniform vec2 mouse;   // posição do cursor (mesmas coordenadas de p)
+uniform float forca;  // 0 = cursor fora da hero, 1 = dentro
 
 // sorteio sem padrões visíveis (hash de Dave Hoskins)
 float hash(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
@@ -432,25 +435,30 @@ void main(){
   float asp = res.x / res.y;
   vec2 p = vec2(uv.x * asp, uv.y);
   float tt = t * 0.4;   // velocidade das luzes
-  const float M = 3.0;  // amplitude do movimento
 
-  // focos flutuando devagar ao longo da diagonal (alto à direita → embaixo à esquerda)
+  // repulsão: a luz perto do cursor é empurrada para fora (deslocamento suave, sem emenda no centro)
+  vec2 dm = p - mouse;
+  float d2 = dot(dm, dm);
+  float raio = 0.30;
+  float campo = forca * exp(-d2 / (raio * raio));
+  vec2 q = p - dm * 0.9 * campo;
+
+  // centro de cada foco: percorre a hero inteira em trajetórias (Lissajous) com ritmos diferentes
+  #define CENTRO(fx, fy, ph) vec2(asp * (0.5 + 0.46 * sin(tt * fx + ph)), 0.5 + 0.44 * cos(tt * fy + ph * 1.7))
+
   vec3 luz = vec3(0.0);
-  luz += CIANO * 0.95 * foco(p, vec2(asp * (0.93 + 0.05 * M * sin(tt * 0.9)), 0.16 + 0.07 * M * cos(tt * 0.7)), 0.34);
-  luz += AZUL  * 0.85 * foco(p, vec2(asp * (0.68 + 0.07 * M * sin(tt * 0.6 + 1.3)), 0.40 + 0.08 * M * sin(tt * 0.8)), 0.36);
-  luz += AZUL2 * 0.70 * foco(p, vec2(asp * (0.55 + 0.06 * M * cos(tt * 0.5 + 2.1)), 0.62 + 0.06 * M * sin(tt * 0.9 + 0.4)), 0.32);
-  luz += TEAL  * 0.80 * foco(p, vec2(asp * (0.36 + 0.07 * M * sin(tt * 0.7 + 3.0)), 0.90 + 0.06 * M * cos(tt * 0.6)), 0.38);
-  luz += CIANO * 0.35 * foco(p, vec2(asp * (0.80 + 0.10 * M * sin(tt * 0.4 + 4.2)), 0.30 + 0.10 * M * cos(tt * 0.5 + 1.0)), 0.16);
-  luz += AZUL  * 0.30 * foco(p, vec2(asp * (0.45 + 0.10 * M * cos(tt * 0.45 + 0.7)), 0.78 + 0.08 * M * sin(tt * 0.55)), 0.15);
+  luz += CIANO * 0.95 * foco(q, CENTRO(0.31, 0.23, 0.0), 0.36);
+  luz += AZUL  * 0.85 * foco(q, CENTRO(0.21, 0.29, 1.9), 0.38);
+  luz += AZUL2 * 0.75 * foco(q, CENTRO(0.26, 0.17, 3.6), 0.34);
+  luz += TEAL  * 0.85 * foco(q, CENTRO(0.17, 0.27, 5.1), 0.38);
+  luz += CIANO * 0.45 * foco(q, CENTRO(0.37, 0.33, 2.7), 0.20);
+  luz += AZUL  * 0.40 * foco(q, CENTRO(0.29, 0.41, 4.4), 0.18);
 
-  // dois feixes de luz entrando pelo alto à direita, pulsando de leve
-  vec2 dir = normalize(vec2(-asp * 0.62, 1.0));
-  luz += CIANO * 0.22 * (0.6 + 0.4 * sin(tt * 1.3)) * feixe(p, vec2(asp * 1.05, -0.05), dir, 0.10 + 0.02 * sin(tt));
-  luz += AZUL  * 0.18 * (0.6 + 0.4 * sin(tt * 1.1 + 2.0)) * feixe(p, vec2(asp * 0.92, -0.10), normalize(dir + vec2(0.12, 0.0)), 0.07);
+  // vazio arredondado onde o cursor está: a luz “foge” dele
+  luz *= 1.0 - 0.7 * forca * exp(-d2 / (0.17 * 0.17));
 
   // soma das luzes com compressão suave (não estoura no branco)
   vec3 cor = MARINHO + (1.0 - exp(-luz * 0.95));
-  cor *= 1.0 - 0.35 * smoothstep(0.55, 0.0, uv.x) * (1.0 - clamp(length(luz), 0.0, 1.0)); // esquerda mais funda
 
   // dither imperceptível (±0,5 tom) só para evitar faixas no degradê escuro
   cor += (hash(gl_FragCoord.xy) - 0.5) / 255.0;
@@ -483,6 +491,22 @@ void main(){
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const uRes = gl.getUniformLocation(prog, 'res');
   const uT = gl.getUniformLocation(prog, 't');
+  const uMouse = gl.getUniformLocation(prog, 'mouse');
+  const uForca = gl.getUniformLocation(prog, 'forca');
+
+  // cursor: posição e força suavizadas, para a luz fugir com inércia
+  const hero = tela.closest('.hero');
+  const alvo = { x: -10, y: -10, f: 0 };
+  const cur = { x: -10, y: -10, f: 0 };
+  hero.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    const r = tela.getBoundingClientRect();
+    alvo.x = (e.clientX - r.left) / r.height; // mesma escala de p (largura em unidades de altura)
+    alvo.y = (e.clientY - r.top) / r.height;
+    alvo.f = 1;
+    if (cur.f === 0) { cur.x = alvo.x; cur.y = alvo.y; }
+  });
+  hero.addEventListener('pointerleave', () => { alvo.f = 0; });
 
   // resolução cheia (até 1,5x) para o grão ficar fino; o shader é leve
   function ajustar() {
@@ -501,6 +525,12 @@ void main(){
     ajustar();
     gl.uniform2f(uRes, tela.width, tela.height);
     gl.uniform1f(uT, 40 + (agora - inicio) / 1000);
+    cur.x += (alvo.x - cur.x) * 0.12;
+    cur.y += (alvo.y - cur.y) * 0.12;
+    cur.f += (alvo.f - cur.f) * 0.06;
+    if (cur.f < 0.001) cur.f = 0;
+    gl.uniform2f(uMouse, cur.x, cur.y);
+    gl.uniform1f(uForca, cur.f);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
   const quadro = (agora) => {
