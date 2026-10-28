@@ -556,3 +556,24 @@ void main(){
   window.addEventListener('resize', () => { if (!rodando) desenhar(performance.now()); });
   tocar();
 })();
+
+// ============ DEPOIMENTOS EM VÍDEO: abre o vídeo do Instagram num pop-up ============
+const videoModal = document.querySelector('.video-modal');
+if (videoModal) {
+  const videoFrame = videoModal.querySelector('iframe');
+  const fecharVideo = () => {
+    videoModal.hidden = true;
+    videoFrame.src = '';
+    document.body.style.overflow = '';
+  };
+  document.querySelectorAll('.video-dep').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      videoFrame.src = `https://www.instagram.com/p/${btn.dataset.post}/embed/`;
+      videoModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    })
+  );
+  videoModal.querySelector('.video-modal-fechar').addEventListener('click', fecharVideo);
+  videoModal.addEventListener('click', (e) => { if (e.target === videoModal) fecharVideo(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !videoModal.hidden) fecharVideo(); });
+}
