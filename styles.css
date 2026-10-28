@@ -432,7 +432,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 }
 .parcial { color: #9c9c9c; }
 .icone-sim { width: 24px; height: 24px; color: #22c55e; }
-.icone-nao { width: 24px; height: 24px; color: rgba(255, 255, 255, .3); }
+.icone-nao { width: 24px; height: 24px; color: #ff4d5e; }
 /* botão ocupa a célula destacada inteira, até os cantos arredondados de baixo */
 .t-foot .t-hl { padding: 0; align-items: stretch; overflow: hidden; }
 .btn-integrar {
