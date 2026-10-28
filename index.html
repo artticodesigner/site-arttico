@@ -86,23 +86,23 @@
   </section>
 
   <!-- ============ DEPOIMENTOS EM VÍDEO ============ -->
-  <!-- cada capa abre o vídeo do Instagram num pop-up -->
+  <!-- o vídeo toca dentro do próprio card; ao dar play num, os outros pausam -->
   <section class="videos-dep" id="depoimentos-video">
     <span class="tag">DEPOIMENTOS</span>
     <h2>Quem cresce <span>com a Arttico</span></h2>
     <div class="videos-dep-grade">
-      <button class="video-dep" data-post="DKNmBI7xmgN" aria-label="Assistir depoimento da Farmafórmula">
-        <img src="assets/depoimento-1.webp" alt="" loading="lazy">
-        <span class="video-dep-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg></span>
-      </button>
-      <button class="video-dep" data-post="DRIjxk8kmjo" aria-label="Assistir depoimento do Prime Gourmet Club">
-        <img src="assets/depoimento-2.webp" alt="" loading="lazy">
-        <span class="video-dep-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg></span>
-      </button>
-      <button class="video-dep" data-post="DWC1_jRDagd" aria-label="Assistir depoimento da Dentalmed">
-        <img src="assets/depoimento-3.webp" alt="" loading="lazy">
-        <span class="video-dep-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg></span>
-      </button>
+      <div class="video-dep">
+        <video src="assets/depoimento-1.mp4" poster="assets/depoimento-1.webp" preload="none" playsinline aria-label="Depoimento da Farmafórmula"></video>
+        <button class="video-dep-capa" aria-label="Assistir depoimento da Farmafórmula"><span class="video-dep-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg></span></button>
+      </div>
+      <div class="video-dep">
+        <video src="assets/depoimento-2.mp4" poster="assets/depoimento-2.webp" preload="none" playsinline aria-label="Depoimento do Prime Gourmet Club"></video>
+        <button class="video-dep-capa" aria-label="Assistir depoimento do Prime Gourmet Club"><span class="video-dep-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg></span></button>
+      </div>
+      <div class="video-dep">
+        <video src="assets/depoimento-3.mp4" poster="assets/depoimento-3.webp" preload="none" playsinline aria-label="Depoimento da Dentalmed"></video>
+        <button class="video-dep-capa" aria-label="Assistir depoimento da Dentalmed"><span class="video-dep-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg></span></button>
+      </div>
     </div>
   </section>
 
@@ -349,15 +349,6 @@
       </a>
     </div>
   </section>
-
-  <div class="video-modal" hidden>
-    <div class="video-modal-box">
-      <button class="video-modal-fechar" aria-label="Fechar vídeo">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-      </button>
-      <iframe title="Depoimento em vídeo" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-    </div>
-  </div>
 
   <!-- ============ RODAPÉ ============ -->
   <footer class="footer">

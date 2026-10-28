@@ -557,23 +557,15 @@ void main(){
   tocar();
 })();
 
-// ============ DEPOIMENTOS EM VÍDEO: abre o vídeo do Instagram num pop-up ============
-const videoModal = document.querySelector('.video-modal');
-if (videoModal) {
-  const videoFrame = videoModal.querySelector('iframe');
-  const fecharVideo = () => {
-    videoModal.hidden = true;
-    videoFrame.src = '';
-    document.body.style.overflow = '';
-  };
-  document.querySelectorAll('.video-dep').forEach((btn) =>
-    btn.addEventListener('click', () => {
-      videoFrame.src = `https://www.instagram.com/p/${btn.dataset.post}/embed/`;
-      videoModal.hidden = false;
-      document.body.style.overflow = 'hidden';
-    })
-  );
-  videoModal.querySelector('.video-modal-fechar').addEventListener('click', fecharVideo);
-  videoModal.addEventListener('click', (e) => { if (e.target === videoModal) fecharVideo(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !videoModal.hidden) fecharVideo(); });
-}
+// ============ DEPOIMENTOS EM VÍDEO: toca dentro do card ============
+const videosDep = document.querySelectorAll('.video-dep video');
+document.querySelectorAll('.video-dep').forEach((card) => {
+  const video = card.querySelector('video');
+  card.querySelector('.video-dep-capa').addEventListener('click', () => {
+    card.classList.add('tocando');
+    video.controls = true;
+    video.play();
+  });
+  // um de cada vez: ao dar play num, os outros pausam
+  video.addEventListener('play', () => videosDep.forEach((v) => { if (v !== video) v.pause(); }));
+});
