@@ -197,6 +197,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   letter-spacing: 2.3px;
 }
 .hero-badge b { font-weight: 500; color: var(--ciano); }
+.hero-badge { transition: background .25s; }
+.hero-badge:hover { background: rgba(255, 255, 255, .18); }
 .hero-text p { font: 400 16px/22px "Rethink Sans", sans-serif; text-align: justify; }
 
 /* Faixa de logos */
