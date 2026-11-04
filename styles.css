@@ -676,7 +676,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .time-trilho.arrastando { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
 .time-trilho.arrastando .time-card { transform: none; pointer-events: none; }
 .time-card img { -webkit-user-drag: none; }
-.time-lista { list-style: none; display: flex; gap: 22px; padding-right: max(50px, calc((100vw - 1240px) / 2)); width: max-content; }
+.time-lista { list-style: none; display: flex; align-items: center; gap: 22px; padding-right: max(50px, calc((100vw - 1240px) / 2)); width: max-content; }
 .time-card {
   width: 300px; flex-shrink: 0;
   scroll-snap-align: start;
@@ -688,6 +688,15 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 }
 .time-card img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
 .time-card:hover { transform: translateY(-6px); border-color: rgba(56, 215, 255, .4); }
+/* squad: cards do mesmo time agrupados numa caixa só */
+.time-squad {
+  display: flex; gap: 12px;
+  padding: 12px;
+  border-radius: 24px;
+  border: 1px solid rgba(56, 215, 255, .22);
+  background: linear-gradient(160deg, rgba(56, 215, 255, .1), rgba(0, 40, 120, .14));
+}
+.time-squad .time-card { border-radius: 14px; }
 
 /* ============ RODAPÉ ============ */
 /* mesmas margens laterais das outras seções (conteúdo em 1240px) */
@@ -877,6 +886,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .time-texto h2 { font-size: 40px; }
   .time-card { width: 74vw; max-width: 300px; }
   .time-lista { padding-right: 16px; gap: 14px; }
+  .time-squad { gap: 10px; padding: 10px; border-radius: 20px; }
   .footer { padding: 60px 16px 0; }
   .footer-cta { padding: 34px 22px; border-radius: 20px; }
   .footer-cta h2 { font-size: 30px; line-height: 38px; }

@@ -154,9 +154,10 @@ if (trilho) {
   const soltar = () => {
     if (!arrastando) return;
     arrastando = false;
-    // encaixa no card mais próximo
-    const p = passo();
-    const alvo = Math.round(trilho.scrollLeft / p) * p;
+    // encaixa no card mais próximo (os cards do squad têm espaçamento diferente, então mede cada um)
+    const base = trilho.getBoundingClientRect().left - trilho.scrollLeft;
+    const posicoes = [...trilho.querySelectorAll('.time-card')].map((c) => c.getBoundingClientRect().left - base);
+    const alvo = posicoes.reduce((a, b) => (Math.abs(b - trilho.scrollLeft) < Math.abs(a - trilho.scrollLeft) ? b : a));
     trilho.classList.remove('arrastando');
     trilho.scrollTo({ left: alvo });
   };
