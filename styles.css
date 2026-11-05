@@ -744,16 +744,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .footer-cta-botoes { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
 .btn-footer { height: 58px; padding: 0 26px; gap: 16px; font-size: 20px; }
 .btn-footer svg { width: 24px; height: 24px; }
-.btn-whats {
-  display: flex; align-items: center; gap: 10px;
-  height: 58px; padding: 0 24px;
-  border: 1px solid rgba(163, 227, 240, .5);
-  border-radius: 8px;
-  color: var(--ciano);
-  font: 500 18px "Rethink Sans", sans-serif;
-  transition: background .2s, transform .2s;
-}
-.btn-whats:hover { background: rgba(163, 227, 240, .1); transform: translateY(-2px); }
 
 /* Colunas */
 .footer-top {
@@ -893,7 +883,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .footer-cta { padding: 34px 22px; border-radius: 20px; }
   .footer-cta h2 { font-size: 30px; line-height: 38px; }
   .footer-cta-botoes { flex-direction: column; align-items: stretch; width: 100%; }
-  .btn-footer, .btn-whats { justify-content: center; font-size: 18px; }
+  .btn-footer { justify-content: center; font-size: 18px; }
   .footer-top { margin-top: 56px; grid-template-columns: 1fr; gap: 36px; }
   .footer-copy { margin-top: 50px; font-size: 13px; }
 }
